@@ -1,0 +1,22 @@
+# The buf.gen.yaml file controls how the buf generate
+# command executes protoc plugins on a given module.
+# With a buf.gen.yaml, you can configure where each
+# protoc plugin writes its result and specify options for each plugin.
+
+version: v1
+managed:
+  enabled: true
+  go_package_prefix:
+    default: github.com/salmanbao/practice/buf-cli/gen
+    except:
+      - buf.build/googleapis/googleapis
+plugins:
+  - plugin: go
+    out: gen
+    opt: paths=source_relative
+  # - plugin: buf.build/protocolbuffers/go
+  #   out: gen
+  #   opt: paths=source_relative
+  # - plugin: buf.build/connectrpc/go #Generates client and server stubs for connectrpc.com/connect. Compatible with the gRPC, gRPC-Web, and Connect RPC protocols.
+  #   out: gen
+  #   opt: paths=source_relative
