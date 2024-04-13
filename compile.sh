@@ -20,7 +20,7 @@ fi
 # Check if build was successful (exit code 0 indicates success)
 if [[ $? -eq 0 ]]; then
   # Copy the built binary to the target directory
-  cp protoc-gen-custom /Users/salmansaleem/go/bin/
+  cp protoc-gen-custom ${GOPATH}/bin/
 
 
 # Run the protoc command with custom options

@@ -2,8 +2,12 @@ package plugin
 
 import (
 	"fmt"
+	"log"
 
+	"github.com/salmanbao/practice/custom-protoc-plugin/gen/proto/user"
 	protogen "google.golang.org/protobuf/compiler/protogen"
+	"google.golang.org/protobuf/proto"
+	"google.golang.org/protobuf/reflect/protoreflect"
 )
 
 // This file is just for logging different values
@@ -31,5 +35,36 @@ func InspectMessages(msgs []*protogen.Message) {
 func InspectFields(m *protogen.Message) {
 	for _, f := range m.Fields {
 		fmt.Print("(", f.GoName, ")", "=>")
+	}
+}
+
+func LearnProto(gen *protogen.Plugin) {
+	var msg user.Person
+	msg.Id = 1
+	msg.Email = "john@gmail.com"
+	err := proto.CheckInitialized(&msg)
+	if err != nil {
+		log.Print(err)
+	}
+
+	getMessageValues(msg.ProtoReflect())
+
+}
+
+func getMessageValues(msg protoreflect.Message) {
+	// Get message descriptor
+	descriptor := msg.Descriptor()
+
+	for i := 0; i < descriptor.Fields().Len(); i++ {
+		fieldDesc := descriptor.Fields().Get(i)
+		fieldName := fieldDesc.Name()
+		fieldValue := msg.Get(fieldDesc)
+
+		switch fieldDesc.Kind() {
+		case protoreflect.StringKind:
+			fmt.Printf("Field: %s, Value: %s\n", fieldName, fieldValue.String())
+		case protoreflect.Int32Kind:
+			fmt.Printf("Field: %s, Value: %d\n", fieldName, fieldValue.Int())
+		}
 	}
 }
