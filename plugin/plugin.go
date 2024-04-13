@@ -19,7 +19,8 @@ func Generate(gen *protogen.Plugin, dbtag string) error {
 		}
 		iterateFileMessages(gen, f, dbtag)
 	}
-	// LearnProto(gen) // just for learning
+	// Learning purpose
+	LearnProto(gen)
 	return nil
 }
 
