@@ -1,8 +1,6 @@
 package plugin
 
 import (
-	"github.com/golang/protobuf/descriptor"
-	"github.com/salmanbao/practice/custom-protoc-plugin/gen/proto/user"
 	"google.golang.org/protobuf/compiler/protogen"
 	"google.golang.org/protobuf/reflect/protoreflect"
 )
@@ -21,8 +19,7 @@ func Generate(gen *protogen.Plugin, dbtag string) error {
 		}
 		iterateFileMessages(gen, f, dbtag)
 	}
-	//
-	LearnProto(gen) // just for learning
+	// LearnProto(gen) // just for learning
 	return nil
 }
 
@@ -43,11 +40,21 @@ func iterateFileMessages(gen *protogen.Plugin, file *protogen.File, dbtag string
 		// This function will generate struct from the message
 		generateStructs(message, g, dbtag)
 
-		var msg user.Person
-		_, md := descriptor.MessageDescriptorProto(&msg)
-		// Get all the available custom options on the given message type i.e Person
-		options := md.GetOptions()
+		// Method 1
+		// Get the Message Descriptor
+		md := message.Desc
+		// Get the all options exists in this message
+		options := md.Options()
 
+		// Method 2
+		// The Person type should be import from the generated file in the gen folder
+		// var msg user.Person
+		// _, md := descriptor.MessageDescriptorProto(&msg)
+		// Get all the available custom options on the given message type i.e Person
+		// options := md.GetOptions()
+
+		// Method 3
+		// But this method only fetch the given option i.e E_ValidateEmail
 		// _, err := proto.GetExtension(md.Options, user.E_ValidateEmail)
 		// if err == nil {
 		// val, ok := ext.(*bool)
