@@ -4,12 +4,16 @@ import (
 	"fmt"
 	"io"
 	"os"
+	"time"
 
+	newspb "github.com/salmanbao/practice/custom-protoc-plugin/gen/proto/news"
 	userpb "github.com/salmanbao/practice/custom-protoc-plugin/gen/proto/user"
 	"google.golang.org/protobuf/encoding/protojson"
 	"google.golang.org/protobuf/encoding/prototext"
 	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/reflect/protodesc"
+	"google.golang.org/protobuf/reflect/protopath"
+	"google.golang.org/protobuf/reflect/protorange"
 	"google.golang.org/protobuf/reflect/protoreflect"
 	"google.golang.org/protobuf/reflect/protoregistry"
 	"google.golang.org/protobuf/runtime/protoimpl"
@@ -17,6 +21,8 @@ import (
 	"github.com/jhump/protoreflect/desc/protoparse"
 	"google.golang.org/protobuf/types/descriptorpb"
 	"google.golang.org/protobuf/types/dynamicpb"
+	"google.golang.org/protobuf/types/known/anypb"
+	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
 func ProtobufGoExamples() {
@@ -24,7 +30,9 @@ func ProtobufGoExamples() {
 	// ProtoJsonPkg()
 	// ProtoTextPkg()
 	// ReflectProtoReflectPkg()
-	ReflectProtoRegistryPkg()
+	// ReflectProtoRegistryPkg()
+	// ReflectProtoPathAndProtoRangePkg()
+	ReflectProtoDescPkg()
 }
 
 func ProtoPkg() {
@@ -236,7 +244,7 @@ func ReflectProtoRegistryPkg() {
 		for i := 0; i < product_fd.Messages().Len(); i++ {
 
 			// instance of MessageType
-			mt := dynamicpb.NewMessageType(product_fd.Messages().Get(i))
+			mt := dynamicpb.NewMessageType(product_fd.Messages().Get(i)) // Its also apply on enum and services
 
 			//register MessageType in the global registry
 			if err = protoregistry.GlobalTypes.RegisterMessage(mt); err != nil {
@@ -252,5 +260,107 @@ func ReflectProtoRegistryPkg() {
 		}
 
 	}
+}
 
+func mustMarshal(m proto.Message) []byte {
+	if m != nil {
+
+		b, err := proto.Marshal(m)
+		if err != nil {
+			panic(err)
+		}
+		return b
+	}
+	return []byte{}
+}
+
+func ReflectProtoPathAndProtoRangePkg() {
+	m := &newspb.Article{
+		Author:  "Russ Cox",
+		Date:    timestamppb.New(time.Date(2019, time.November, 8, 0, 0, 0, 0, time.UTC)),
+		Title:   "Go Turns 10",
+		Content: "Happy birthday, Go! This weekend we celebrate the 10th anniversary of the Go release...",
+		Status:  newspb.Article_PUBLISHED,
+		Tags:    []string{"community", "birthday"},
+		Attachments: []*anypb.Any{{
+			TypeUrl: "google.golang.org.BinaryAttachment",
+			Value: mustMarshal(&newspb.BinaryAttachment{
+				Name: "gopher-birthday.png",
+				Data: []byte("<binary data>"),
+			}),
+		}},
+	}
+
+	// Traverse over all reachable values and print the path.
+	protorange.Range(m.ProtoReflect(), func(p protopath.Values) error {
+		fmt.Println(" [", p.Path[1:], "] ")
+		return nil
+	})
+}
+
+func ReflectProtoDescPkg() {
+	// protodesc.NewFile() is already used above for converting FileDescriptorProto to FileDescriptor
+
+	// External/New .proto file which we have to register with global registry
+	filename := "proto/product/Product.proto"
+
+	// Step-1 Parse .proto file
+	// This is an external package used to parse .proto files
+	parser := protoparse.Parser{Accessor: func(name string) (io.ReadCloser, error) {
+		return os.Open(name)
+	}}
+
+	descriptors, err := parser.ParseFiles(filename)
+	if err != nil {
+		fmt.Print(" [unable to parse .proto files] ")
+	}
+
+	// Step-2 Convert FileDescriptor to FileDescriptorProto
+	fileDescriptorProto := descriptors[0].AsFileDescriptorProto()
+
+	// Step-3 Create a FileDescriptorSet for managing multiple .proto file info
+	fileDescriptorSet := &descriptorpb.FileDescriptorSet{}
+	fileDescriptorSet.File = append(fileDescriptorSet.File, fileDescriptorProto)
+
+	// This will return the FileRegistry
+	fileRegistry, err := protodesc.NewFiles(fileDescriptorSet)
+	if err != nil {
+		fmt.Print("Error: ", err)
+	}
+	fileRegistry.NumFiles()
+
+	fileDescriptor, err := fileRegistry.FindFileByPath(filename)
+	if err != nil {
+		fmt.Print("[ File not found :", err, "] ")
+	}
+
+	fileDescriptor.FullName()
+
+	// There also Other methods for conversion
+	//	╔═══════════════════════════════╗
+	//	║       Methods       			║
+	//	╠═══════════════════════════════╣
+	//	║ ToDescriptorProto   			║
+	//	║ ToFileDescriptorProto   		║
+	//	║ ToFieldDescriptorProto     	║
+	//	║ ToOneofDescriptorProto     	║
+	//	║ ToEnumDescriptorProto      	║
+	//	║ ToEnumValueDescriptorProto    ║
+	//	║ ToServiceDescriptorProto   	║
+	//	║ ToMethodDescriptorProto    	║
+	//	╚═══════════════════════════════╝
+
+	// fdp := protodesc.ToFileDescriptorProto(fileDescriptor)
+
+	// Will return ServiceDescriptorProto
+	// fdp.Service
+
+	// Will return EnumDescriptorProto
+	// fdp.EnumType
+
+	// Will return DescriptorProto
+	// fdp.MessageType
+
+	// Will return FieldDescriptorProto
+	// fdp.MessageType[0].GetField()
 }

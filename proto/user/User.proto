@@ -3,7 +3,7 @@ syntax = "proto3";
 package user;
 
 import "google/protobuf/descriptor.proto";
-option go_package = " github.com/salmanbao/practice/custom-protoc-plugin/proto/user";
+option go_package = "github.com/salmanbao/practice/custom-protoc-plugin/proto/user";
 
 
 extend google.protobuf.MessageOptions {
