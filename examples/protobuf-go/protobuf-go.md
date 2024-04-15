@@ -15,7 +15,7 @@
 10. `testing/protocmp`: Package `protocmp` provides protobuf specific options for the `cmp` package.
 11. `testing/protopack`: Package `protopack` aids manual encoding and decoding of the wire format.
 12. `testing/prototest`: Package `prototest` exercises the protobuf reflection implementation for concrete message types.
-13. `types/dynamicpb`: Package `dynamicpb` creates protobuf messages at runtime from protobuf descriptors.
+13. `types/dynamicpb`: Package `dynamicpb` creates protobuf messages at runtime from protobuf descriptors. Can be used to create Go type descriptors from protobuf descriptors
 14. `types/known/anypb`: Package `anypb` is the generated package for `google/protobuf/any.proto`.
 15. `types/known/timestamppb`: Package `timestamppb` is the generated package for `google/protobuf/timestamp.proto`
 16. `types/known/durationpb`: Package `durationpb` is the generated package for `google/protobuf/duration.proto`

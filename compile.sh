@@ -24,7 +24,7 @@ if [[ $? -eq 0 ]]; then
 
 
 # Run the protoc command with custom options
-  protoc --custom_out=internal --custom_opt=paths=source_relative,dbtag=sql proto/**/*.proto
+  protoc --custom_out=internal --custom_opt=paths=source_relative,dbtag=sql proto/user/*.proto
 
 else
   echo "Error: Building Go application failed."

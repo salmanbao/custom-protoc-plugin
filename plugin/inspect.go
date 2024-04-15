@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log"
 
+	protobufgo "github.com/salmanbao/practice/custom-protoc-plugin/examples/protobuf-go"
 	"github.com/salmanbao/practice/custom-protoc-plugin/gen/proto/user"
 	protogen "google.golang.org/protobuf/compiler/protogen"
 	"google.golang.org/protobuf/proto"
@@ -49,6 +50,6 @@ func LearnProto(gen *protogen.Plugin) {
 	}
 
 	// protobufexample.ProtobufExamples()
-	// protobufgo.ProtobufGoExamples()
+	protobufgo.ProtobufGoExamples()
 
 }

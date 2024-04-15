@@ -1,0 +1,11 @@
+syntax = "proto3";
+
+package product;
+
+option go_package = " github.com/salmanbao/practice/custom-protoc-plugin/proto/product";
+
+
+message Product {
+optional int32 id = 1;
+optional string name = 2;
+}
