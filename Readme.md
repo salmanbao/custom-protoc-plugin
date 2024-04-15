@@ -7,6 +7,9 @@ In this demo we are trying to generate code based on the custom protobuf options
 We are specifying a custom MessagOption name `validateEmail` and if it true we are generating a function name `ValidateEmail` in our custom coded file.
 
 ``Internal`` folder contain the newly generated code
+
+In `examples` directory you will find example usage of different packages of [protobuf-go](https://github.com/protocolbuffers/protobuf-go) so you can get the idea of its usage.
+
 ## Installation
 
 Install Prequisites
