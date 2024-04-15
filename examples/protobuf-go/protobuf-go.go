@@ -334,8 +334,6 @@ func ReflectProtoDescPkg() {
 		fmt.Print("[ File not found :", err, "] ")
 	}
 
-	fileDescriptor.FullName()
-
 	// There also Other methods for conversion
 	//	╔═══════════════════════════════╗
 	//	║       Methods       			║
@@ -363,4 +361,5 @@ func ReflectProtoDescPkg() {
 
 	// Will return FieldDescriptorProto
 	// fdp.MessageType[0].GetField()
+	fileDescriptor.FullName()
 }
